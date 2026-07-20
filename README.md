@@ -1,23 +1,28 @@
 # Smart Inventory Replenishment System
 
-Sistem prediksi demand dan rekomendasi restock otomatis untuk retail,
-dibangun dengan Clean Architecture dan GoF Design Pattern.
+Demand forecasting and automated restock recommendation system for retail, built with Clean Architecture and GoF Design Patterns.
 
-**Status:** Sprint 1 - Domain Layer, Core Interfaces & Use Cases
+**Status:** Sprint 3 - RESTful API Layer & Event-Driven Alerts
 
-## Cara menjalankan test
+## How to Run Tests
 
 ```bash
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+source venv/bin/activate    # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python -m pytest -v
 ```
 
-## Struktur project
+## How to Run the API
 
-- `domain/` - entities & interfaces (business rules murni, tanpa dependency eksternal)
-- `application/` - use cases (logika aplikasi, dependency injection)
-- `infrastructure/` - implementasi konkret (database, ML) - mulai Sprint 2
-- `api/` - FastAPI routes - mulai Sprint 3
-- `tests/` - unit test dengan mock repository
+```bash
+uvicorn api.main:app --reload
+```
+
+## Project Structure
+
+- `domain/` - entities & interfaces (pure business rules, no external dependency)
+- `application/` - use cases (application logic, dependency injection) + `InventoryServiceFacade` (Sprint 3)
+- `infrastructure/` - concrete implementations (database, ML - Sprint 2; notifiers for Observer pattern - Sprint 3)
+- `api/` - FastAPI routes (Sprint 3)
+- `tests/` - unit tests with mock repository + integration tests (Sprint 3)
