@@ -18,7 +18,10 @@ class InventoryServiceFacade:
         self.alert_use_case = alert_use_case
 
     def process_product(self, product_id: str) -> ReorderRecommendation:
-        raise NotImplementedError(
-            "InventoryServiceFacade.process_product is implemented in "
-            "Issue #20 (Implement Inventory Service Facade)."
+        forecast = self.forecast_use_case.execute(product_id=product_id)
+        recommendation = self.reorder_use_case.execute(
+            product_id=product_id, forecast=forecast
         )
+        if recommendation.needs_restock:
+            self.alert_use_case.execute(recommendation=recommendation)
+        return recommendation

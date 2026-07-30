@@ -1,18 +1,32 @@
 import os
 from functools import lru_cache
+
 from fastapi import Depends
 from sqlalchemy.orm import Session
+
 from application.inventory_service_facade import InventoryServiceFacade
+from application.use_cases.calculate_reorder_point import (
+    CalculateReorderPointUseCase,       
+)
+from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
 from infrastructure.db.session import get_session
 from infrastructure.ml.xgboost_strategy import XGBoostStrategy
 from infrastructure.repositories.sqlalchemy_forecast_repository import (
     SQLAlchemyForecastRepository,
 )
+from infrastructure.repositories.sqlalchemy_inventory_repository import (
+    SQLAlchemyInventoryRepository,
+)
+from infrastructure.repositories.sqlalchemy_product_repository import (
+    SQLAlchemyProductRepository,
+)
+from infrastructure.repositories.sqlalchemy_reorder_repository import (
+    SQLAlchemyReorderRepository,      
+)
 from infrastructure.repositories.sqlalchemy_transaction_repository import (
     SQLAlchemyTransactionRepository,
 )
-
 
 XGBOOST_MODEL_PATH = os.getenv(
     "XGBOOST_MODEL_PATH", "infrastructure/ml/model_registry/xgboost-v1.json"
@@ -32,16 +46,32 @@ def get_forecast_use_case(
     session: Session = Depends(get_session),
     strategy: XGBoostStrategy = Depends(get_forecast_strategy),
 ) -> GenerateForecastUseCase:
-    
     return GenerateForecastUseCase(
         strategy=strategy,
         transaction_repo=SQLAlchemyTransactionRepository(session),
         forecast_repo=SQLAlchemyForecastRepository(session),
     )
 
-def get_facade() -> InventoryServiceFacade:
-    raise NotImplementedError(
-        "Wire InventoryServiceFacade with CalculateReorderPointUseCase and "
-        "CreateAlertUseCase here as part of Issue #20 (Implement Inventory "
-        "Service Facade)."
+def get_reorder_use_case(
+    session: Session = Depends(get_session),
+) -> CalculateReorderPointUseCase:
+    return CalculateReorderPointUseCase(
+        product_repo=SQLAlchemyProductRepository(session),
+        inventory_repo=SQLAlchemyInventoryRepository(session),
+        reorder_repo=SQLAlchemyReorderRepository(session),
+    )
+
+def get_alert_use_case() -> CreateAlertUseCase:
+    # TODO(#21): inject concrete Notifier implementations (Log/Email/Dashboard)
+    return CreateAlertUseCase(notifiers=[])
+
+def get_facade(
+    forecast_use_case: GenerateForecastUseCase = Depends(get_forecast_use_case),
+    reorder_use_case: CalculateReorderPointUseCase = Depends(get_reorder_use_case),
+    alert_use_case: CreateAlertUseCase = Depends(get_alert_use_case),
+) -> InventoryServiceFacade:
+    return InventoryServiceFacade(
+        forecast_use_case=forecast_use_case,
+        reorder_use_case=reorder_use_case,
+        alert_use_case=alert_use_case,
     )
