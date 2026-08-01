@@ -12,6 +12,12 @@ from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
 from infrastructure.db.session import get_session
 from infrastructure.ml.xgboost_strategy import XGBoostStrategy
+from infrastructure.notifiers.dashboard_notifier import DashboardNotifier    
+from infrastructure.notifiers.email_notifier import EmailNotifier
+from infrastructure.notifiers.log_notifier import LogNotifier
+from infrastructure.repositories.sqlalchemy_alert_repository import (
+    SQLAlchemyAlertRepository,  
+)
 from infrastructure.repositories.sqlalchemy_forecast_repository import (
     SQLAlchemyForecastRepository,
 )
@@ -35,6 +41,7 @@ XGBOOST_METADATA_PATH = os.getenv(
     "XGBOOST_METADATA_PATH",
     "infrastructure/ml/model_registry/xgboost-v1_metadata.json",
 )
+ALERT_EMAIL_RECIPIENT = os.getenv("ALERT_EMAIL_RECIPIENT", "inventory-team@example.com")
 
 @lru_cache(maxsize=1)
 def get_forecast_strategy() -> XGBoostStrategy:
@@ -61,9 +68,16 @@ def get_reorder_use_case(
         reorder_repo=SQLAlchemyReorderRepository(session),
     )
 
-def get_alert_use_case() -> CreateAlertUseCase:
-    # TODO(#21): inject concrete Notifier implementations (Log/Email/Dashboard)
-    return CreateAlertUseCase(notifiers=[])
+def get_alert_use_case(
+    session: Session = Depends(get_session),
+) -> CreateAlertUseCase:
+    return CreateAlertUseCase(
+        notifiers=[
+            EmailNotifier(recipient=ALERT_EMAIL_RECIPIENT),
+            LogNotifier(),
+            DashboardNotifier(alert_repo=SQLAlchemyAlertRepository(session)),
+        ]    
+    )
 
 def get_facade(
     forecast_use_case: GenerateForecastUseCase = Depends(get_forecast_use_case),
