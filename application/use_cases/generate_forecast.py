@@ -3,7 +3,6 @@ from domain.interfaces.forecast_repository import ForecastRepository
 from domain.interfaces.forecast_strategy import ForecastStrategy
 from domain.interfaces.transaction_repository import TransactionRepository
 
-
 class GenerateForecastUseCase:
 
     def __init__(
@@ -18,6 +17,10 @@ class GenerateForecastUseCase:
 
     def execute(self, product_id: str) -> ForecastResult:
         historical_data = self.transaction_repo.get_history(product_id)
+        if not historical_data:
+            raise ValueError(
+                f"Riwayat transaksi untuk product_id={product_id} tidak ditemukan"
+            )  
         forecast = self.strategy.predict(product_id, historical_data)
         self.forecast_repo.save(forecast)
         return forecast
