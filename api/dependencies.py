@@ -10,6 +10,8 @@ from application.use_cases.calculate_reorder_point import (
 )
 from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
+from application.use_cases.get_dashboard_data import GetDashboardDataUseCase
+from application.use_cases.get_forecast_history import GetForecastHistoryUseCase
 from infrastructure.db.session import get_session
 from infrastructure.ml.xgboost_strategy import XGBoostStrategy
 from infrastructure.notifiers.dashboard_notifier import DashboardNotifier    
@@ -77,6 +79,24 @@ def get_alert_use_case(
             LogNotifier(),
             DashboardNotifier(alert_repo=SQLAlchemyAlertRepository(session)),
         ]    
+    )
+
+def get_dashboard_use_case(
+    session: Session = Depends(get_session),
+) -> GetDashboardDataUseCase:
+    return GetDashboardDataUseCase(
+        product_repo=SQLAlchemyProductRepository(session),
+        inventory_repo=SQLAlchemyInventoryRepository(session),
+        reorder_repo=SQLAlchemyReorderRepository(session),
+        alert_repo=SQLAlchemyAlertRepository(session),
+    )
+
+def get_forecast_history_use_case(
+    session: Session = Depends(get_session),
+) -> GetForecastHistoryUseCase:
+    return GetForecastHistoryUseCase(
+        product_repo=SQLAlchemyProductRepository(session),
+        forecast_repo=SQLAlchemyForecastRepository(session),
     )
 
 def get_facade(

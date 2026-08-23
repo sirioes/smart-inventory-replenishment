@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.orm import Session
 
 from domain.entities.inventory_item import InventoryItem
@@ -17,6 +19,14 @@ class SQLAlchemyInventoryRepository(InventoryRepository):
         )
         if row is None:
             raise ValueError(f"InventoryItem untuk product_id={product_id} tidak ditemukan")
+        return self._to_entity(row)
+
+    def list_all(self) -> List[InventoryItem]:
+        rows = self.session.query(InventoryItemModel).all()
+        return [self._to_entity(row) for row in rows]
+
+    @staticmethod
+    def _to_entity(row: InventoryItemModel) -> InventoryItem:
         return InventoryItem(
             product_id=row.product_id,
             current_stock=row.current_stock,
