@@ -12,6 +12,7 @@ from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
 from application.use_cases.get_dashboard_data import GetDashboardDataUseCase
 from application.use_cases.get_forecast_history import GetForecastHistoryUseCase
+from application.use_cases.get_sales_history import GetSalesHistoryUseCase
 from infrastructure.db.session import get_session
 from infrastructure.ml.xgboost_strategy import XGBoostStrategy
 from infrastructure.notifiers.dashboard_notifier import DashboardNotifier    
@@ -97,6 +98,14 @@ def get_forecast_history_use_case(
     return GetForecastHistoryUseCase(
         product_repo=SQLAlchemyProductRepository(session),
         forecast_repo=SQLAlchemyForecastRepository(session),
+    )
+
+def get_sales_history_use_case(
+    session: Session = Depends(get_session),
+) -> GetSalesHistoryUseCase:
+    return GetSalesHistoryUseCase(
+        product_repo=SQLAlchemyProductRepository(session),
+        transaction_repo=SQLAlchemyTransactionRepository(session),
     )
 
 def get_facade(
