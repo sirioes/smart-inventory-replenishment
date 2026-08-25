@@ -4,6 +4,7 @@ import type {
   ForecastResponse,
   HealthResponse,
   ReorderRecommendationResponse,
+  SalesHistoryItem,
 } from "@/types/api";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -59,6 +60,12 @@ export function getForecastHistory(
 ): Promise<ForecastHistoryResponse> {
   return request<ForecastHistoryResponse>(
     `/products/${encodeURIComponent(productId)}/forecasts`,
+  );
+}
+
+export function getSalesHistory(productId: string): Promise<SalesHistoryItem[]> {
+  return request<SalesHistoryItem[]>(
+    `/products/${encodeURIComponent(productId)}/sales-history`,
   );
 }
 
