@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import dashboard, forecasts, inventory, sales
+from api.routes import alerts, dashboard, forecasts, inventory, sales
 from api.schemas.health_schema import HealthResponse
 
 app = FastAPI(
@@ -28,6 +28,7 @@ app.include_router(inventory.router)
 app.include_router(forecasts.router)
 app.include_router(dashboard.router)
 app.include_router(sales.router)
+app.include_router(alerts.router)
 
 @app.get(
     "/health",
