@@ -10,6 +10,7 @@ from application.use_cases.calculate_reorder_point import (
 )
 from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
+from application.use_cases.get_alerts_feed import GetAlertsFeedUseCase
 from application.use_cases.get_dashboard_data import GetDashboardDataUseCase
 from application.use_cases.get_forecast_history import GetForecastHistoryUseCase
 from application.use_cases.get_sales_history import GetSalesHistoryUseCase
@@ -107,6 +108,11 @@ def get_sales_history_use_case(
         product_repo=SQLAlchemyProductRepository(session),
         transaction_repo=SQLAlchemyTransactionRepository(session),
     )
+
+def get_alerts_feed_use_case(
+    session: Session = Depends(get_session),
+) -> GetAlertsFeedUseCase:
+    return GetAlertsFeedUseCase(alert_repo=SQLAlchemyAlertRepository(session))
 
 def get_facade(
     forecast_use_case: GenerateForecastUseCase = Depends(get_forecast_use_case),

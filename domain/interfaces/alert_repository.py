@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 
 from domain.entities.alert import Alert
 
@@ -17,4 +18,9 @@ class AlertRepository(ABC):
         ReorderRecommendation. That join is an infrastructure concern —
         this method keeps it out of the application layer.
         """
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_recent(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """List recent alerts joined with their product context."""
         raise NotImplementedError

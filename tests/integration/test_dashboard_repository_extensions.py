@@ -106,6 +106,37 @@ def test_forecast_repository_list_by_product_id_orders_oldest_first(session):
     assert [h.forecast_date for h in history] == [date(2026, 8, 1), date(2026, 8, 8)]
 
 
+def test_alert_repository_list_recent_joins_product_context(session):
+    session.add_all([
+        ProductModel(id="A3", sku="SKU-5", name="Gelang Kerang", lead_time_days=7),
+        ProductModel(id="M2", sku="SKU-3", name="Pisang Keju", lead_time_days=3),
+    ])
+    session.commit()
+
+    rec_a3 = ReorderRecommendationModel(
+        product_id="A3", reorder_point=10.0, recommended_qty=5, needs_restock=True
+    )
+    rec_m2 = ReorderRecommendationModel(
+        product_id="M2", reorder_point=8.0, recommended_qty=3, needs_restock=True
+    )
+    session.add_all([rec_a3, rec_m2])
+    session.commit()
+
+    session.add(AlertModel(recommendation_id=rec_a3.id, status="open", channel="dashboard"))
+    session.commit()
+    session.add(AlertModel(recommendation_id=rec_m2.id, status="acknowledged", channel="email"))
+    session.commit()
+
+    repo = SQLAlchemyAlertRepository(session)
+    feed = repo.list_recent(limit=10)
+
+    assert len(feed) == 2
+    assert feed[0]["sku"] == "SKU-3"
+    assert feed[0]["status"] == "acknowledged"
+    assert feed[1]["sku"] == "SKU-5"
+    assert feed[1]["recommended_qty"] == 5
+
+
 def test_alert_repository_count_open_for_product_joins_through_recommendation(session):
     session.add_all([
         ProductModel(id="A3", sku="SKU-5", name="Gelang Kerang", lead_time_days=7),
