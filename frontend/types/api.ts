@@ -35,3 +35,9 @@ export interface DashboardResponse {
 }
 
 export type ForecastHistoryResponse = ForecastResponse[];
+
+export interface SalesHistoryItem {
+  transaction_date: string;
+  quantity_sold: number;
+  is_promo: boolean;
+}
