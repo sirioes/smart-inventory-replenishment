@@ -41,3 +41,14 @@ export interface SalesHistoryItem {
   quantity_sold: number;
   is_promo: boolean;
 }
+
+export interface AlertFeedItem {
+  alert_id: string;
+  product_id: string;
+  sku: string;
+  name: string;
+  status: string;
+  channel: string;
+  created_at: string;
+  recommended_qty: number;
+}
