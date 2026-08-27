@@ -6,6 +6,7 @@ import type {
   ReorderRecommendationResponse,
   SalesHistoryItem,
   AlertFeedItem,
+  ChatResponse,
 } from "@/types/api";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -72,6 +73,13 @@ export function getSalesHistory(productId: string): Promise<SalesHistoryItem[]> 
 
 export function getAlertsFeed(limit = 50): Promise<AlertFeedItem[]> {
   return request<AlertFeedItem[]>(`/alerts?limit=${limit}`);
+}
+
+export function sendChatMessage(question: string): Promise<ChatResponse> {
+  return request<ChatResponse>("/chat", {
+    method: "POST",
+    body: JSON.stringify({ question }),
+  });
 }
 
 export function processProduct(
