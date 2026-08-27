@@ -10,7 +10,7 @@ type Probe =
   | { phase: "online"; status: string; timestamp: string; latencyMs: number }
   | { phase: "offline"; message: string };
 
-const UPCOMING_MODULES = [
+const SHIPPED_MODULES = [
   {
     code: "IN",
     name: "Inventory Overview",
@@ -32,7 +32,7 @@ const UPCOMING_MODULES = [
   {
     code: "AI",
     name: "Assistant",
-    description: "Natural language Q&A over inventory metrics, via Groq + Llama 3.1.",
+    description: "Natural language Q&A over inventory metrics, grounded in live data.",
     dependsOn: "POST /chat",
   },
 ];
@@ -127,9 +127,9 @@ export default function HomePage() {
         )}
       </Panel>
 
-      <Panel eyebrow="Sprint 04 · Build Manifest" title="Console Modules">
+      <Panel eyebrow="Sprint 04 · Build Manifest" title="Console Modules - Shipped">
         <ul className="divide-y divide-border">
-          {UPCOMING_MODULES.map((mod) => (
+          {SHIPPED_MODULES.map((mod) => (
             <li key={mod.code} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
               <div className="flex items-start gap-3">
                 <span className="mt-0.5 font-mono text-xs font-semibold tracking-wideish text-text-secondary">
@@ -143,7 +143,7 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
-              <StatusPill tone="watch">Building</StatusPill>
+              <StatusPill tone="healthy">Live</StatusPill>
             </li>
           ))}
         </ul>

@@ -52,3 +52,7 @@ export interface AlertFeedItem {
   created_at: string;
   recommended_qty: number;
 }
+
+export interface ChatResponse {
+  answer: string;
+}
