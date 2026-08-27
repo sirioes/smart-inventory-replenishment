@@ -1,9 +1,11 @@
 import os
 from datetime import datetime, timezone
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import alerts, dashboard, forecasts, inventory, sales
+from fastapi.responses import JSONResponse
+from api.routes import alerts, chat, dashboard, forecasts, inventory, sales
 from api.schemas.health_schema import HealthResponse
+from domain.interfaces.llm_provider import LLMProviderError
 
 app = FastAPI(
     title="Smart Inventory Replenishment System",
@@ -29,6 +31,14 @@ app.include_router(forecasts.router)
 app.include_router(dashboard.router)
 app.include_router(sales.router)
 app.include_router(alerts.router)
+app.include_router(chat.router)
+
+@app.exception_handler(LLMProviderError)
+def handle_llm_provider_error(request: Request, exc: LLMProviderError) -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content={"detail": f"Chat assistant sedang tidak bisa diakses: {exc}"},
+    )
 
 @app.get(
     "/health",

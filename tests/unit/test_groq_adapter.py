@@ -1,5 +1,9 @@
 from unittest.mock import MagicMock
 
+import pytest
+from groq import GroqError
+
+from domain.interfaces.llm_provider import LLMProviderError
 from infrastructure.llm.groq_adapter import GroqAdapter
 
 
@@ -59,3 +63,13 @@ def test_model_reads_from_env_when_set(monkeypatch):
     adapter = GroqAdapter(client=client)
 
     assert adapter.model == "openai/gpt-oss-120b"
+
+
+def test_ask_translates_groq_error_into_domain_error():
+    client = MagicMock()
+    client.chat.completions.create.side_effect = GroqError("rate limited")
+
+    adapter = GroqAdapter(client=client, model="test-model")
+
+    with pytest.raises(LLMProviderError):
+        adapter.ask(system_prompt="SYSTEM", user_message="USER")
