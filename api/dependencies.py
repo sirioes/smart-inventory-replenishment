@@ -10,11 +10,13 @@ from application.use_cases.calculate_reorder_point import (
 )
 from application.use_cases.create_alert import CreateAlertUseCase
 from application.use_cases.generate_forecast import GenerateForecastUseCase
+from application.use_cases.answer_inventory_query import AnswerInventoryQueryUseCase
 from application.use_cases.get_alerts_feed import GetAlertsFeedUseCase
 from application.use_cases.get_dashboard_data import GetDashboardDataUseCase
 from application.use_cases.get_forecast_history import GetForecastHistoryUseCase
 from application.use_cases.get_sales_history import GetSalesHistoryUseCase
 from infrastructure.db.session import get_session
+from infrastructure.llm.groq_adapter import GroqAdapter
 from infrastructure.ml.xgboost_strategy import XGBoostStrategy
 from infrastructure.notifiers.dashboard_notifier import DashboardNotifier    
 from infrastructure.notifiers.email_notifier import EmailNotifier
@@ -113,6 +115,19 @@ def get_alerts_feed_use_case(
     session: Session = Depends(get_session),
 ) -> GetAlertsFeedUseCase:
     return GetAlertsFeedUseCase(alert_repo=SQLAlchemyAlertRepository(session))
+
+def get_answer_inventory_query_use_case(
+    session: Session = Depends(get_session),
+) -> AnswerInventoryQueryUseCase:
+    return AnswerInventoryQueryUseCase(
+        llm_provider=GroqAdapter(),
+        dashboard_use_case=GetDashboardDataUseCase(
+            product_repo=SQLAlchemyProductRepository(session),
+            inventory_repo=SQLAlchemyInventoryRepository(session),
+            reorder_repo=SQLAlchemyReorderRepository(session),
+            alert_repo=SQLAlchemyAlertRepository(session),
+        ),
+    )
 
 def get_facade(
     forecast_use_case: GenerateForecastUseCase = Depends(get_forecast_use_case),
