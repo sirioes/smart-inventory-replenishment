@@ -3,6 +3,29 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+
+  /* Content surface */
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-raised: #eef1f6;
+  --border: #e1e6ed;
+
+  --text-primary: #1a2233;
+  --text-secondary: #667085;
+
+  --accent: #3ed9c4;
+  --accent-muted: rgba(62, 217, 196, 0.12);
+
+  --status-healthy: #15803d;
+  --status-watch: #b45309;
+  --status-critical: #dc2626;
+}
+
+/* Original dark theme */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
   --bg: #12151c;
   --surface: #1a1f29;
   --surface-raised: #212836;
@@ -10,9 +33,6 @@
 
   --text-primary: #e8eaf0;
   --text-secondary: #8a93a8;
-
-  --accent: #3ed9c4;
-  --accent-muted: rgba(62, 217, 196, 0.12);
 
   --status-healthy: #6ee7b7;
   --status-watch: #f5b942;
@@ -23,14 +43,11 @@
   border-color: var(--border);
 }
 
-html {
-  color-scheme: dark;
-}
-
 body {
   background-color: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body), sans-serif;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 :focus-visible {

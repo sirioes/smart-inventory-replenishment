@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Big_Shoulders, Big_Shoulders_Stencil, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import "./globals.css";
 
-const display = Big_Shoulders({
+const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
   variable: "--font-display",
-});
-
-const stencil = Big_Shoulders_Stencil({
-  subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-stencil",
 });
 
 const body = IBM_Plex_Sans({
@@ -33,18 +27,31 @@ export const metadata: Metadata = {
   description: "Demand forecasting and automated restock console.",
 };
 
+const THEME_INIT_SCRIPT = `
+(function () {
+  try {
+    var stored = localStorage.getItem("sir-theme");
+    document.documentElement.setAttribute("data-theme", stored === "dark" ? "dark" : "light");
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${display.variable} ${stencil.variable} ${body.variable} ${mono.variable}`}
+      suppressHydrationWarning
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
         <div className="flex h-screen overflow-hidden">
           <Sidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
             <Topbar />
-            <main className="flex-1 overflow-y-auto p-6">{children}</main>
+            <main className="flex-1 overflow-y-auto bg-bg p-6">{children}</main>
           </div>
         </div>
       </body>
