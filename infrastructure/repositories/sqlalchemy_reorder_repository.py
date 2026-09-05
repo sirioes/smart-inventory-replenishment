@@ -20,6 +20,7 @@ class SQLAlchemyReorderRepository(ReorderRepository):
         )
         self.session.add(row)
         self.session.commit()
+        recommendation.id = row.id
 
     def get_latest_by_product_id(self, product_id: str) -> Optional[ReorderRecommendation]:
         row = (
@@ -31,6 +32,7 @@ class SQLAlchemyReorderRepository(ReorderRepository):
         if row is None:
             return None
         return ReorderRecommendation(
+            id=row.id,
             product_id=row.product_id,
             reorder_point=row.reorder_point,
             recommended_qty=row.recommended_qty,
