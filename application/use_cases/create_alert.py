@@ -11,7 +11,7 @@ class CreateAlertUseCase:
         self.notifiers = notifiers
 
     def execute(self, recommendation: ReorderRecommendation) -> Alert:
-        alert = Alert(recommendation_id=recommendation.product_id, status="open")
+        alert = Alert(recommendation_id=recommendation.id, status="open")
         for notifier in self.notifiers:
             notifier.notify(alert)
         return alert
