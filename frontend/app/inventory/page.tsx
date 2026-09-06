@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ApiError, getDashboardData } from "@/lib/api-client";
+import { formatUnits } from "@/lib/format";
 import { Panel } from "@/components/ui/Panel";
 import { StatusPill } from "@/components/ui/StatusPill";
 import type { ProductDashboardItem } from "@/types/api";
@@ -109,7 +110,7 @@ export default function InventoryPage() {
                       <td className="py-3 pr-4 text-right font-data">{product.current_stock}</td>
                       <td className="py-3 pr-4 text-right font-data">{product.safety_stock}</td>
                       <td className="py-3 pr-4 text-right font-data">
-                        {product.reorder_point ?? "—"}
+                        {formatUnits(product.reorder_point)}
                       </td>
                       <td className="py-3">
                         <StatusPill tone={status.tone}>{status.label}</StatusPill>
