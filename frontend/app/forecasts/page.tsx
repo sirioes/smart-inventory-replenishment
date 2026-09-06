@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { ApiError, getDashboardData, getForecastHistory, getSalesHistory } from "@/lib/api-client";
+import { formatUnits } from "@/lib/format";
 import { Panel } from "@/components/ui/Panel";
 import { StatusPill } from "@/components/ui/StatusPill";
 import type { ProductDashboardItem } from "@/types/api";
@@ -182,6 +183,7 @@ export default function ForecastsPage() {
                     <XAxis dataKey="date" tick={AXIS_TICK_STYLE} stroke="var(--border)" />
                     <YAxis tick={AXIS_TICK_STYLE} stroke="var(--border)" />
                     <Tooltip
+                      formatter={(value) => formatUnits(value as number)}
                       contentStyle={{
                         background: "var(--surface-raised)",
                         border: "1px solid var(--border)",
